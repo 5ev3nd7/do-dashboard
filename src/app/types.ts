@@ -17,6 +17,7 @@ export interface App {
   deployments?: Deployment[];
   memory_percentage?: number | null;
   cpu_percentage?: number | null;
+  tier_slug?: string;
 }
 
 export interface Step {
@@ -102,4 +103,27 @@ export interface MonitoringData {
 
 export interface AppWithMonitoring extends App {
   monitoring?: MonitoringData;
+}
+
+export interface MonitoringResult {
+  metric: {
+    __name__: string;
+    app_id: string;
+    component_name: string;
+  };
+  values: [number, string][]; // [timestamp, value] pairs
+}
+
+export interface MetricsInsightsProps {
+  app: AppWithMonitoring;
+}
+
+export interface Insight {
+  id: string;
+  timestamp: number;
+  type: 'info' | 'warning' | 'success' | 'error';
+  title: string;
+  description: string;
+  metric?: string;
+  value?: string;
 }

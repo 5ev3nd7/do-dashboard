@@ -1,5 +1,6 @@
 import React from 'react';
 import type { AppWithMonitoring } from '../types';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface MonitoringMetricsProps {
   app: AppWithMonitoring;
@@ -51,85 +52,90 @@ const MonitoringMetrics: React.FC<MonitoringMetricsProps> = ({ app }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-800">
-          Monitoring Metrics - {app.spec?.name || 'Unknown App'}
-        </h3>
-        {monitoring?.timestamp && (
-          <span className="text-sm text-gray-500">
-            Last updated: {formatTimestamp(monitoring.timestamp)}
-          </span>
+    <Card>
+      <CardHeader>
+        <CardTitle>
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-gray-800">
+              Monitoring Metrics - {app.spec?.name || 'Unknown App'}
+            </h3>
+            {monitoring?.timestamp && (
+              <span className="text-sm text-gray-500">
+                Last updated: {formatTimestamp(monitoring.timestamp)}
+              </span>
+            )}
+          </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col gap-8 mb-8">
+          {/* CPU Usage */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-700">CPU Usage</span>
+              <span className={`text-sm font-semibold ${getStatusColor(monitoring?.cpu_percentage ?? null, 'cpu')}`}>
+                {formatPercentage(monitoring?.cpu_percentage ?? null)}
+              </span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div
+                className={`h-2 rounded-full transition-all duration-300 ${getProgressColor(monitoring?.cpu_percentage ?? null, 'cpu')}`}
+                style={{
+                  width: monitoring?.cpu_percentage 
+                    ? `${Math.min(monitoring.cpu_percentage, 100)}%` 
+                    : '0%'
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Memory Usage */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-700">Memory Usage</span>
+              <span className={`text-sm font-semibold ${getStatusColor(monitoring?.memory_percentage ?? null, 'memory')}`}>
+                {formatPercentage(monitoring?.memory_percentage ?? null)}
+              </span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div
+                className={`h-2 rounded-full transition-all duration-300 ${getProgressColor(monitoring?.memory_percentage ?? null, 'memory')}`}
+                style={{
+                  width: monitoring?.memory_percentage 
+                    ? `${Math.min(monitoring.memory_percentage, 100)}%` 
+                    : '0%'
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Status Indicators */}
+        <div className="mt-4 flex items-center space-x-4 text-xs text-gray-500">
+          <div className="flex items-center space-x-1">
+            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            <span>Normal</span>
+          </div>
+          <div className="flex items-center space-x-1">
+            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+            <span>Warning</span>
+          </div>
+          <div className="flex items-center space-x-1">
+            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+            <span>Critical</span>
+          </div>
+        </div>
+
+        {/* No Data Message */}
+        {(!monitoring?.cpu_percentage && !monitoring?.memory_percentage) && (
+          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+            <p className="text-sm text-gray-600 text-center">
+              No monitoring data available. This may be normal for newly deployed apps.
+            </p>
+          </div>
         )}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* CPU Usage */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-700">CPU Usage</span>
-            <span className={`text-sm font-semibold ${getStatusColor(monitoring?.cpu_percentage ?? null, 'cpu')}`}>
-              {formatPercentage(monitoring?.cpu_percentage ?? null)}
-            </span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className={`h-2 rounded-full transition-all duration-300 ${getProgressColor(monitoring?.cpu_percentage ?? null, 'cpu')}`}
-              style={{
-                width: monitoring?.cpu_percentage 
-                  ? `${Math.min(monitoring.cpu_percentage, 100)}%` 
-                  : '0%'
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Memory Usage */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-700">Memory Usage</span>
-            <span className={`text-sm font-semibold ${getStatusColor(monitoring?.memory_percentage ?? null, 'memory')}`}>
-              {formatPercentage(monitoring?.memory_percentage ?? null)}
-            </span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className={`h-2 rounded-full transition-all duration-300 ${getProgressColor(monitoring?.memory_percentage ?? null, 'memory')}`}
-              style={{
-                width: monitoring?.memory_percentage 
-                  ? `${Math.min(monitoring.memory_percentage, 100)}%` 
-                  : '0%'
-              }}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Status Indicators */}
-      <div className="mt-4 flex items-center space-x-4 text-xs text-gray-500">
-        <div className="flex items-center space-x-1">
-          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-          <span>Normal</span>
-        </div>
-        <div className="flex items-center space-x-1">
-          <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-          <span>Warning</span>
-        </div>
-        <div className="flex items-center space-x-1">
-          <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-          <span>Critical</span>
-        </div>
-      </div>
-
-      {/* No Data Message */}
-      {(!monitoring?.cpu_percentage && !monitoring?.memory_percentage) && (
-        <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-          <p className="text-sm text-gray-600 text-center">
-            No monitoring data available. This may be normal for newly deployed apps.
-          </p>
-        </div>
-      )}
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

@@ -1,8 +1,9 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import type { App, Project, ProjectResource, MonitoringData } from '../../types'
+import type { App, Project, ProjectResource, MonitoringData, MonitoringResult } from '../../types'
 import AppDeploymentList from '@/app/components/AppDeploymentList';
 import MonitoringMetrics from '@/app/components/MonitoringMetrics';
+import MetricsInsights from '@/app/components/MetricsInsights';
 
 const token = process.env.DIGITALOCEAN_API_TOKEN!;
 
@@ -72,11 +73,10 @@ async function fetchAppMonitoring(appId: string): Promise<MonitoringData> {
 
     if (memoryRes.ok) {
       const memoryJson = await memoryRes.json();
-      // Fix: Access data.result instead of data directly
       if (memoryJson.data && memoryJson.data.result && memoryJson.data.result.length > 0) {
-        const resultWithData = memoryJson.data.result.find(r => r.values && r.values.length > 0);
+        const results = memoryJson.data.result as MonitoringResult[];
+        const resultWithData = results.find((r) => r.values && r.values.length > 0);
         if (resultWithData) {
-          // Get the latest value (last in the values array)
           const latestValue = resultWithData.values[resultWithData.values.length - 1];
           memoryData = parseFloat(latestValue[1]); // [timestamp, value]
         }
@@ -85,11 +85,10 @@ async function fetchAppMonitoring(appId: string): Promise<MonitoringData> {
 
     if (cpuRes.ok) {
       const cpuJson = await cpuRes.json();
-      // Fix: Access data.result instead of data directly
       if (cpuJson.data && cpuJson.data.result && cpuJson.data.result.length > 0) {
-        const resultWithData = cpuJson.data.result.find(r => r.values && r.values.length > 0);
+        const results = cpuJson.data.result as MonitoringResult[];
+        const resultWithData = results.find((r) => r.values && r.values.length > 0);
         if (resultWithData) {
-          // Get the latest value (last in the values array)
           const latestValue = resultWithData.values[resultWithData.values.length - 1];
           cpuData = parseFloat(latestValue[1]); // [timestamp, value]
         }
@@ -119,15 +118,14 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
   const resources = await fetchProjectResources(project.id);
   const appIds = resources.map((r) => extractAppIdFromUrn(r.urn)).filter(Boolean) as string[];
   
-  console.log('App IDs found:', appIds); // Add this
+  // console.log('App IDs found:', appIds);
 
-  // Update your app fetching logic to properly include monitoring data
   const appsWithMonitoring = await Promise.all(
     appIds.map(async (appId) => {
       const app = await fetchApp(appId);
       if (app) {
         const monitoring = await fetchAppMonitoring(appId);
-        console.log(`Monitoring data for app ${appId}:`, monitoring); // Add this
+        // console.log(`Monitoring data for app ${appId}:`, monitoring);
         return { ...app, monitoring } as App;
       }
       return null;
@@ -135,20 +133,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
   );
   
   const validApps = appsWithMonitoring.filter(Boolean) as App[];
-  console.log('Valid apps with monitoring:', validApps); // Add this
-
-
-
-// export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
-//   const { id } = params;
-//   const project = await fetchProject(id);
-//   if (!project) return notFound();
-
-//   const resources = await fetchProjectResources(project.id);
-//   const appIds = resources.map((r) => extractAppIdFromUrn(r.urn)).filter(Boolean) as string[];
-
-//   const apps = await Promise.all(appIds.map(fetchApp, fetchAppMonitoring));
-//   const validApps = apps.filter(Boolean) as App[];
+  // console.log('Valid apps with monitoring:', validApps);
 
   return (
     <main className="p-6">
@@ -160,9 +145,16 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
       <p className="text-xs text-gray-500 mb-6">Project ID: {project.id}</p>
 
       {validApps.map((app) => (
-        <div key={app.id}>
-          <MonitoringMetrics app={app}/>
-          <AppDeploymentList app={app} />
+        <div key={app.id} className="border-t-2 border-black pt-8">
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <AppDeploymentList app={app} />
+            </div>
+            <div className="flex flex-col gap-6">
+              <MonitoringMetrics app={app}/>
+              <MetricsInsights app={app}/>
+            </div>
+          </div>
         </div>
       ))}
     </main>

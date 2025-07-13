@@ -38,7 +38,6 @@ function buildDuration(deployment: Deployment) {
     return "No timing data";
   }
   
-  // Find the earliest start time and latest end time across all sub-steps
   const subSteps = buildStep.steps;
   const startTimes = subSteps
     .map(step => step.started_at)
@@ -54,7 +53,6 @@ function buildDuration(deployment: Deployment) {
     return "No timing data";
   }
   
-  // Get the earliest start and latest end
   const start = new Date(Math.min(...startTimes.map(d => d.getTime())));
   const end = new Date(Math.max(...endTimes.map(d => d.getTime())));
   
@@ -64,7 +62,6 @@ function buildDuration(deployment: Deployment) {
   
   const durationMs = end.getTime() - start.getTime();
   
-  // Format the duration nicely
   if (durationMs < 1000) {
     return `${durationMs}ms build`;
   } else if (durationMs < 60000) {
@@ -85,12 +82,15 @@ export default function AppDeploymentList({ app }: { app: App }) {
 
   return (
     <div className="mb-10">
-      <h2 className="text-xl font-semibold mb-2">{app.spec.name}</h2>
+      <h2 className="text-xl font-semibold mb-2">App: {app.spec.name}</h2>
 
       {app.live_url && (
         <p className="text-sm text-blue-600 mb-6">
-          <a href={app.live_url} target="_blank" rel="noopener noreferrer">
+          <a href={app.live_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1">
             {app.live_url}
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
           </a>
         </p>
       )}
