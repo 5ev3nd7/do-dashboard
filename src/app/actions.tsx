@@ -35,12 +35,6 @@ export async function getAppStatus(appId: string) {
   return json.app
 }
 
-export async function getAppDeployments(appId: string) {
-  const response = await fetch(`https://api.digitalocean.com/v2/apps/${appId}/deployments`, { headers })
-  const json = await response.json()
-  return json.deployments
-}
-
 export async function getDeploymentLogs(appId: string, deploymentId: string) {
   const response = await fetch(`https://api.digitalocean.com/v2/apps/${appId}/deployments/${deploymentId}/logs`, { headers })
   const json = await response.json()
@@ -57,10 +51,4 @@ export async function getAppBandwidth(appId: string) {
   const response = await fetch(`https://api.digitalocean.com/v2/apps/${appId}/metrics/bandwidth/daily`, { headers })
   const json = await response.json()
   return json.data || []
-}
-
-export async function getAppHealth(appId: string) {
-  const response = await fetch(`https://api.digitalocean.com/v2/apps/${appId}/health`, { headers })
-  const json = await response.json()
-  return json.health
 }

@@ -2,6 +2,10 @@ export interface Project {
   id: string;
   name: string;
 }
+export interface ProjectSummary {
+  id: string;
+  name: string;
+}
 
 export interface ProjectResource {
   urn: string;
@@ -39,11 +43,38 @@ export interface Progress {
   steps: ProgressStep[];
 }
 
+export interface DeploymentSpec {
+  name: string;
+  services?: {
+    name: string;
+    instance_count?: number;
+    instance_size_slug?: string;
+    github?: {
+      repo: string;
+      branch: string;
+    };
+  }[];
+  envs?: {
+    key: string;
+    value: string;
+  }[];
+  workers?: {
+    name: string;
+  }[];
+  jobs?: {
+    name: string;
+  }[];
+  static_sites?: {
+    name: string;
+  }[];
+}
+
 export interface Deployment {
   id: string;
   created_at: string;
   updated_at: string;
   phase: string;
+  spec?: DeploymentSpec;
   cause_details?: {
     type?: string;
     git_push?: {
