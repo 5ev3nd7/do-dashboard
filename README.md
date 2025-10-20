@@ -1,4 +1,4 @@
-# 🧭 DigitalOcean Dashboard
+# DigitalOcean Dashboard
 
 A custom-built internal tool for monitoring deployment activity, health status, and performance across DigitalOcean applications — all from a single unified interface.
 
@@ -6,7 +6,7 @@ Built with **Next.js**, **Tailwind CSS**, and integrated with both the **Digital
 
 ---
 
-## 🚀 Features
+## Features
 
 - Real-time status of all DigitalOcean projects and deployments  
 - Application health and uptime monitoring  
@@ -17,7 +17,7 @@ Built with **Next.js**, **Tailwind CSS**, and integrated with both the **Digital
 
 ---
 
-## 🧰 Tech Stack
+## Tech Stack
 
 - **Framework:** Next.js 15  
 - **Language:** TypeScript  
@@ -29,7 +29,7 @@ Built with **Next.js**, **Tailwind CSS**, and integrated with both the **Digital
 
 ---
 
-## ⚙️ Getting Started
+## Getting Started
 
 ### 1. Clone the Repository
 
@@ -58,7 +58,7 @@ Create a .env.local file in the project root and add your DigitalOcean API Key:
 DIGITALOCEAN_API_KEY=your_digitalocean_api_key_here
 ```
 
-# Note:
+### Note:
 You'll need to create a new DigitalOcean Personal Access Token from the account you want to monitor.
 
 - Go to: DigitalOcean Control Panel → API → Tokens/Keys
